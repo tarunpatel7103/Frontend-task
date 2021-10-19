@@ -1,174 +1,216 @@
-// import {Component} from "react";
-// import { ErrorMessage, Field, Formik } from "formik"
-// import { Form } from "formik"
-// import IntervieweeDataService from "../../api/interviewee/IntervieweeDataService";
-
-// class IntervieweUpdateComponent extends Component{
-//     constructor(props){
-//         super(props)
-//         this.state={
+import {Component} from "react";
+import { ErrorMessage, Field, Formik } from "formik"
+import { Form } from "formik"
+import InterviewDataService from "../../api/interviewee/InterviewDataService";
+import moment from "moment"
+class InterviewUpdateComponent extends Component{
+    constructor(props){
+        super(props)
+        this.state=
+        {
             
-//             id:this.props.match.params.id,
-//             name :'',
-//             skills:'',
-//             experience:'',
-//             qualification:''
+            interview_id:Number(this.props.match.params.id),
+            //scheduled_time :moment(Date.now()).format('YYYY-MM-DDTHH:MM:SS.000+0000'),
+            time:moment(new Date()).format('YYYY-MM-DDTHH:MM:SS.000+0000'),
             
-//         };
-//         this.onSubmit=this.onSubmit.bind(this)
+            isDeleted:false,
+            status:'',
+            interviewee:
+                {
+                id:'',
+                name:'',
+                skills:'',
+                experience:'',
+                qualification:''
+                },
+            
+            positions:{
+                id:'',
+                title:'',
+                description:''
+            },
+            rounds:
+            {
+                id:'',
+                name:'',
+                seq:''
+            },
+            interviewer:
+            {
+                id:'',
+                name:''
+            }
+            
+            
+            
+        };
+        this.onSubmit=this.onSubmit.bind(this)
         
-//     }
-//    componentDidMount(){
-//         if(this.state.id==-1){
-//             return
-//         }
-//         else{
-//         console.log('retrieving one ')
-//         IntervieweeDataService.retrieveInterviewee(this.state.id)
-//         .then(response =>//console.log(response.data.result.name)
-//         //console.log(response.data.result.skills)
-//             this.setState({
-//             name: response.data.result.name,
-//             skills: response.data.result.skills,
-//             experience: response.data.result.experience,
-//             qualification: response.data.result.qualification
-
-//         })
         
-//         )
-//         console.log(this.state)
-//     }
-//     }
-//     onSubmit(values){
-//         if(this.state.id===-1){
-//             this.setState({id:Math.random()})
-//         }
-//         let interviewee = {
-//             id:this.state.id,
-//             name: values.name,
-//             skills: values.skills,
-//             experience: values.experience,
-//             qualification: values.qualification
-
-//         }
-//         if(this.state.id==-1){
-//             //console.log("enter")
-//             IntervieweeDataService.createInterviewee(interviewee).then(
-//                 ()=> {
+        
+    }
+    
+   componentDidMount(){
+        if(this.state.interview_id==-1){
+            return
+        }
+        else{
+        console.log('retrieving one ')
+        InterviewDataService.retrieveInterview(this.state.interview_id)
+        .then(response =>
+            this.setState({
+            
+            time: response.data.result.time,
+            status: response.data.result.status,
+            interviewee: response.data.result.interviewee,
+            positions: response.data.result.positions,
+            rounds: response.data.result.rounds,
+            interviewer: response.data.result.interviewer
+        })
+        
+        )
+        
+        
+    }
+    }
+    componentDidUpdate(){
+        
+        //InterviewDataService.updateInterview(this.state.interview_id,this.state)
+        
+        
+    }
+    refreshInterviews(){
+        
+        InterviewDataService.retrieveAllInterviews()
+        
+        
+    }
+    onSubmit(values){
+        this.setState({
                     
-//                     this.props.history.push('/interviewees')
-//                 }
-//             )
-
-//         }else{
-//             IntervieweeDataService.updateInterviewee(this.state.id,interviewee).then(
-//                 ()=> {
-//                     this.props.history.push('/interviewees')
-//                 }
-//             )
-
-//         }
-//     }
+            //time:moment(values.time).format('YYYY-MM-DDTHH:MM:SS.000+0000'),
+            time:values.time,
+            status: values.status,
+            interviewee: values.interviewee,
+            positions: values.positions,
+            rounds: values.rounds,
+            interviewer: values.interviewer
+        })
+        if(this.state.interview_id==-1){
+            
+            
+            
+            this.setState({interview_id:Math.random()})
+            
+            InterviewDataService.createInterview(this.state)
+            
+            this.props.history.push('/interviews')
+            
+            
+        }
+        else{
+           
+            InterviewDataService.updateInterview(this.state.interview_id,this.state)
+           this.props.history.push('/interviews')
+           
+            }
+            
+        }
+    
    
-//     render(){
-//         let {scheduled_time,status,interviewee,positions,rounds,interviewer}=this.state
-//         //let skills=this.state.skills
-//         //let experience=this.state.experience
-//         //let qualification=this.state.qualification
-//         return (
-//         <div>
-//             <h1>Interview</h1>
-//             <div className="container">
-//                 <Formik initialValues={{scheduled_time,status,interviewee,positions,rounds,interviewer} }
-//                 onSubmit={this.onSubmit}
-//                 enableReinitialize={true} >
-//                     {
-//                         (props)=>(
-//                         <Form>
-//                             <fieldset className="form-group">
-//                                 <label>Scheduled_time</label>
-//                                 <Field className="form-control" type="date" name="time"></Field>
-//                             </fieldset>
+    render(){
+        let {time,status,interviewee,positions,rounds,interviewer}=this.state
+        
+        return (
+        <div>
+            <h1>Interview</h1>
+            <div className="container">
+                <Formik initialValues={{time,status,interviewee,positions,rounds,interviewer} }
+                onSubmit={this.onSubmit}
+                enableReinitialize={true} >
+                    {
+                        (props)=>(
+                        <Form>
+                            <fieldset className="form-group">
+                                <label>Scheduled_time</label>
+                                <Field className="form-control" type="text" name="time" ></Field>
+                            </fieldset>
                             
-//                             <fieldset className="form-group">
-//                                 <label>Status</label>
-//                                 <Field className="form-control" type="text" name="status"></Field>
-//                             </fieldset>
-//                             <h5>Interviewee</h5>
-//                             <fieldset className="form-group">
-//                                 <label>Interviewee_id</label>
-//                                 <Field className="form-control" type="text" name="interviewee.id"></Field>
-//                             </fieldset>
-//                             <fieldset className="form-group">
-//                                 <label>Name</label>
-//                                 <Field className="form-control" type="text" name="interviewee.name"></Field>
-//                             </fieldset>
-//                             <fieldset className="form-group">
-//                                 <label>Skills</label>
-//                                 <Field className="form-control" type="text" name="interviewee.skills"></Field>
-//                             </fieldset>
-//                             <fieldset className="form-group">
-//                                 <label>Experience</label>
-//                                 <Field className="form-control" type="text" name="interviewee.experience"></Field>
-//                             </fieldset>
-//                             <fieldset className="form-group">
-//                                 <label>Qualification</label>
-//                                 <Field className="form-control" type="text" name="interviewee.qualification"></Field>
-//                             </fieldset>
-//                             <h5>Positions</h5>
-//                             <fieldset className="form-group">
-//                                 <label>Position_id</label>
-//                                 <Field className="form-control" type="text" name="positions.id"></Field>
-//                             </fieldset>
-//                             <fieldset className="form-group">
-//                                 <label>Title</label>
-//                                 <Field className="form-control" type="text" name="positions.title"></Field>
-//                             </fieldset>
-//                             <fieldset className="form-group">
-//                                 <label>Description</label>
-//                                 <Field className="form-control" type="text" name="positions.description"></Field>
-//                             </fieldset>
-//                             <h5>Rounds</h5>
-
-//                             <fieldset className="form-group">
-//                                 <label>Round_id</label>
-//                                 <Field className="form-control" type="text" name="rounds.id"></Field>
-//                             </fieldset>
-//                             <fieldset className="form-group">
-//                                 <label>Name</label>
-//                                 <Field className="form-control" type="text" name="rounds.name"></Field>
-//                             </fieldset>
-//                             <fieldset className="form-group">
-//                                 <label>Sequence</label>
-//                                 <Field className="form-control" type="text" name="rounds.sequence"></Field>
-//                             </fieldset>
-//                             <h5>Interviewer</h5>
-
-//                             <fieldset className="form-group">
-//                                 <label>Interviewer_id</label>
-//                                 <Field className="form-control" type="text" name="interviewer.id"></Field>
-//                             </fieldset>
-//                             <fieldset className="form-group">
-//                                 <label>Name</label>
-//                                 <Field className="form-control" type="text" name="interviewer.name"></Field>
-//                             </fieldset>
-//                             <button className="btn btn-success" type="submit">Save</button>
+                            <fieldset className="form-group">
+                                <label>Status</label>
+                                <Field className="form-control" type="text" name="status"></Field>
+                            </fieldset>
+                            <h5>Interviewee</h5>
+                            <fieldset className="form-group">
+                                <label>Interviewee_id</label>
+                                <Field className="form-control" type="text" name="interviewee.id"></Field>
+                            </fieldset>
+                            <fieldset className="form-group">
+                                <label>Name</label>
+                                <Field className="form-control" type="text" name="interviewee.name"></Field>
+                            </fieldset>
+                            <fieldset className="form-group">
+                                <label>Skills</label>
+                                <Field className="form-control" type="text" name="interviewee.skills"></Field>
+                            </fieldset>
+                            <fieldset className="form-group">
+                                <label>Experience</label>
+                                <Field className="form-control" type="text" name="interviewee.experience"></Field>
+                            </fieldset>
+                            <fieldset className="form-group">
+                                <label>Qualification</label>
+                                <Field className="form-control" type="text" name="interviewee.qualification"></Field>
+                            </fieldset>
+                            <h5>Positions</h5>
+                            <fieldset className="form-group">
+                                <label>Position_id</label>
+                                <Field className="form-control" type="text" name="positions.id"></Field>
+                            </fieldset>
+                            <fieldset className="form-group">
+                                <label>Title</label>
+                                <Field className="form-control" type="text" name="positions.title"></Field>
+                            </fieldset>
+                            <fieldset className="form-group">
+                                <label>Description</label>
+                                <Field className="form-control" type="text" name="positions.description"></Field>
+                            </fieldset>
+                            <h5>Rounds</h5>
+                            <fieldset className="form-group">
+                                <label>Round_id</label>
+                                <Field className="form-control" type="text" name="rounds.id"></Field>
+                            </fieldset>
+                            <fieldset className="form-group">
+                                <label>Name</label>
+                                <Field className="form-control" type="text" name="rounds.name"></Field>
+                            </fieldset>
+                            <fieldset className="form-group">
+                                <label>Sequence</label>
+                                <Field className="form-control" type="text" name="rounds.sequence"></Field>
+                            </fieldset>
+                            <h5>Interviewer</h5>
+                            <fieldset className="form-group">
+                                <label>Interviewer_id</label>
+                                <Field className="form-control" type="text" name="interviewer.id"></Field>
+                            </fieldset>
+                            <fieldset className="form-group">
+                                <label>Name</label>
+                                <Field className="form-control" type="text" name="interviewer.name"></Field>
+                            </fieldset>
+                            <button className="btn btn-success" type="submit">Save</button>
                             
                             
-//                         </Form>
+                        </Form>
                         
                         
-
-//                         )
+                        )
                         
                             
                         
-
-//                     }
-//                 </Formik>
-//             </div>
-//             </div>
-//         )
-//     }
-// }
-// export default IntervieweUpdateComponent
+                    }
+                </Formik>
+            </div>
+            </div>
+        )
+    }
+}
+export default InterviewUpdateComponent

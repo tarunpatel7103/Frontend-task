@@ -44,7 +44,7 @@ class InterviewerUpdateComponent extends Component{
         }
         let interviewer = {
             id:this.state.id,
-            title: values.name,
+            name: values.name,
             
             
 

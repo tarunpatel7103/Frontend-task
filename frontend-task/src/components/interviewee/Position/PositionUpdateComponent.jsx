@@ -39,6 +39,8 @@ class PositionUpdateComponent extends Component{
     }
     }
     onSubmit(values){
+        console.log("on submit values called")
+        console.log(values);
         if(this.state.id===-1){
             this.setState({id:Math.random()})
         }

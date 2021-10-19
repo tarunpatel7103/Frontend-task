@@ -8,6 +8,7 @@ class InterviewerDataService{
     }
     //localhost:9191/api/round/update/19
     updateInterviewer(id,interviewer){
+        console.log(interviewer);
         return axios.put(`http://localhost:9191/api/interviewer/update/${id}`,interviewer)
        
     }
@@ -18,7 +19,7 @@ class InterviewerDataService{
        
     }
     deleteInterviewer(id){
-        return axios.delete(`http://localhost:9191/api/interviewer/interviewer/${id}`)
+        return axios.delete(`http://localhost:9191/api/interviewer/delete/${id}`)
        
     }
     retrieveInterviewer(id){
